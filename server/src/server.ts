@@ -17,23 +17,38 @@ let documents: TextDocuments = new TextDocuments()
 documents.listen(connection)
 
 let workspaceRoot: string
+let userFlags: string[]
 
 
-connection.onInitialize((params): InitializeResult => {
+connection.onInitialize((params): Promise<InitializeResult> => {
 	workspaceRoot = params.rootPath
 
-	return {
-		capabilities: {
-			// TextDocument Full-Sync mode
-			textDocumentSync: documents.syncKind,
+	let promise = new Promise(function(resolve) {
 
-			// Accept completion, and provide triggerCharacters
-			completionProvider: {
-				resolveProvider: true,
-				triggerCharacters: ['.', '>', ':']
+		// Check presence of a .clang_complete file
+		readFile(join(workspaceRoot, './.clang_complete'), function(err, data) {
+
+			// If found store its arguments
+			if (!err) {
+				userFlags = data.toString().split('\n')
 			}
-		}
-	}
+
+			resolve({
+				capabilities: {
+					// TextDocument Full-Sync mode
+					textDocumentSync: documents.syncKind,
+
+					// Accept completion, and provide triggerCharacters
+					completionProvider: {
+						resolveProvider: true,
+						triggerCharacters: ['.', '>', ':']
+					}
+				}
+			})
+
+		})
+	})
+	return promise
 })
 
 
@@ -44,12 +59,16 @@ connection.onCompletion((textDocumentPosition): Promise<CompletionItem[]> => {
 
 	let commandArgs = [
 		'clang',
-		'-cc1',
+		'-cc1']
+
+	commandArgs = commandArgs.concat(userFlags)
+
+	commandArgs = commandArgs.concat([
 		'-fsyntax-only',
 		'-xc',
 		'-code-completion-at',
 		`-:${position.line + 1}:${position.character + 1}`
-	]
+	])
 
 	let command = commandArgs.join(' ')
 
