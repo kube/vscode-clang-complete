@@ -27,8 +27,8 @@ export function activate(context: ExtensionContext) {
         // Register server for C files
         documentSelector: ['c'],
         synchronize: {
-            configurationSection: 'ClangComplete',
-            fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+            configurationSection: 'clangComplete',
+            fileEvents: workspace.createFileSystemWatcher('**/.clang_complete')
         }
     }
 
