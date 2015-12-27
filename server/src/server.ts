@@ -1,14 +1,13 @@
 'use strict'
 
 import { readFile } from 'fs'
-import { join } from 'path'
-import { exec } from 'child_process'
+import { join as joinPath, relative as relativePath } from 'path'
 
 import {
-IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocumentSyncKind, TextDocuments, ITextDocument, InitializeParams, InitializeResult, TextDocumentPosition, CompletionItem, CompletionItemKind
+IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocumentSyncKind, TextDocuments, ITextDocument, InitializeParams, InitializeResult, CompletionItem
 } from 'vscode-languageserver'
 
-import { ClangCompletionItem, ClangCompletionList } from './ClangCompletion'
+import { ClangCompletionService } from './ClangCompletionService'
 
 
 let connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process))
@@ -17,66 +16,74 @@ let documents: TextDocuments = new TextDocuments()
 documents.listen(connection)
 
 let workspaceRoot: string
+let completionService: ClangCompletionService
 
 
-connection.onInitialize((params): InitializeResult => {
-	workspaceRoot = params.rootPath
+function getFlagsFromClangCompleteFile(): Promise<string[]> {
+    let promise = new Promise(resolve => {
+        
+        // Check presence of a .clang_complete file
+        let filePath = joinPath(workspaceRoot, './.clang_complete')
 
-	return {
-		capabilities: {
-			// TextDocument Full-Sync mode
-			textDocumentSync: documents.syncKind,
+        readFile(filePath, (err, data) => {
+            // If found file set userFlags, else set no flag
+            let userFlags = data ? data.toString().split('\n') : []
+            resolve(userFlags)
+        })
+    })
+    return promise
+}
 
-			// Accept completion, and provide triggerCharacters
-			completionProvider: {
-				resolveProvider: true,
-				triggerCharacters: ['.', '>', ':']
-			}
-		}
-	}
+
+connection.onInitialize((params): Promise<InitializeResult> => {
+    workspaceRoot = params.rootPath
+
+    let promise = new Promise(resolve => {
+
+        getFlagsFromClangCompleteFile()
+            .then(userFlags => {
+            
+                // Initialize Completion Service
+                completionService = new ClangCompletionService({
+                    userFlags,
+                    workspaceRoot
+                })
+
+                resolve({
+                    capabilities: {
+                        // TextDocument Full-Sync mode
+                        textDocumentSync: documents.syncKind,
+
+                        // Accept completion, and set triggerCharacters
+                        completionProvider: {
+                            resolveProvider: true,
+                            triggerCharacters: ['.', '>', ':']
+                        }
+                    }
+                })
+            })
+    })
+    return promise
 })
 
+connection.onDidChangeWatchedFiles(notification => {
+    // Remove file:// protocol at beginning of uri
+    let fileAbsolutePath = notification.changes[0].uri.replace(/^file:\/\//, '')
+    let fileRelativePath = relativePath(workspaceRoot, fileAbsolutePath)
+
+    // If file is .clang_complete at workspace root
+    if (fileRelativePath === '.clang_complete') {
+        getFlagsFromClangCompleteFile()
+            .then(userFlags =>
+                completionService.setUserFlags(userFlags))
+    }
+})
 
 connection.onCompletion((textDocumentPosition): Promise<CompletionItem[]> => {
-	let document = documents.get(textDocumentPosition.uri)
-	let documentText = document.getText()
-	let position = textDocumentPosition.position
+    let document = documents.get(textDocumentPosition.uri)
+    let position = textDocumentPosition.position
 
-	let commandArgs = [
-		'clang',
-		'-cc1',
-		'-fsyntax-only',
-		'-xc',
-		'-code-completion-at',
-		`-:${position.line + 1}:${position.character + 1}`
-	]
-
-	let command = commandArgs.join(' ')
-
-	let execOptions = {
-		cwd: workspaceRoot
-	}
-
-	let promise = new Promise(function(resolve) {
-		let child = exec(command, execOptions, function(err, stdout, stderr) {
-
-			// Omit errors, simply read stdout for clang completions
-			let completions = new ClangCompletionList(stdout.toString())
-			let completionItemsArray = completions.build()
-
-			resolve(completionItemsArray)
-		})
-		child.stdin.write(documentText)
-		child.stdin.emit('end')
-	})
-	return promise
-})
-
-
-connection.onCompletionResolve(function(item) {
-	// Clean detail on resolve
-	item.detail = ClangCompletionItem.cleanType(item.detail)
-	return item
+    return completionService.getCompletion(document, position)
 })
 
 connection.listen()
