@@ -35,15 +35,12 @@ export class ClangCompletionService {
         this._userFlags = userFlags || []
     }
 
-    getCompletion(document: ITextDocument,
-        position: Position) {
-
-        let execOptions = {
-            cwd: this._workspaceRoot
-        }
-
-        let promise = new Promise((resolve) => {
+    getCompletion(document: ITextDocument, position: Position) {
+        let promise = new Promise(resolve => {
             let command = this.buildCommand(position.line, position.character)
+            let execOptions = {
+                cwd: this._workspaceRoot
+            }
 
             let child = exec(command, execOptions, function(err, stdout, stderr) {
                 // Omit errors, simply read stdout for clang completions
@@ -52,6 +49,8 @@ export class ClangCompletionService {
 
                 resolve(completionItemsArray)
             })
+            
+            // Pass code to clang via stdin
             child.stdin.write(document.getText())
             child.stdin.emit('end')
         })
