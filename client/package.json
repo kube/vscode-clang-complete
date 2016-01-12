@@ -1,5 +1,5 @@
 {
-	"name": "vscode-clang-complete",
+	"name": "ClangComplete",
 	"description": "VSCode C/C++ completion using Clang",
 	"author": "Christophe Feijoo",
 	"license": "MIT",
