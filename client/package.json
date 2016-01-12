@@ -9,7 +9,7 @@
 		"vscode": "0.10.x"
 	},
 	"categories": [
-		"Completion"
+    "Languages"
 	],
 	"activationEvents": [
 		"onLanguage:c"
