@@ -1,4 +1,4 @@
-# vscode-clang-complete
+# Clang Complete
 ###Visual Studio Code C/C++ completion using Clang
 
 ##Setup
@@ -15,12 +15,3 @@ Optional flags for Clang can be defined in a `.clang_complete` file at the *root
     -include ../config.h
     -I../include
 ```
-
-##Next
-
-- C++/ObjC support
-- Precompiled Headers
-- Better completion, even when typing in already started token.
-- Completion of functions parameters
-- Type-check on Hover
-- Linter
