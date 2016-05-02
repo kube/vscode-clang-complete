@@ -3,8 +3,16 @@
   "description": "VSCode C/C++ completion using Clang",
   "author": "Christophe Feijoo",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "kube",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kube/vscode-clang-complete"
+  },
+  "bugs": {
+    "url": "https://github.com/kube/vscode-clang-complete/issues"
+  },
+  "homepage": "https://github.com/kube/vscode-clang-complete",
   "engines": {
     "vscode": "0.10.x"
   },

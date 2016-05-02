@@ -1,9 +1,8 @@
-# Clang Complete
+# ClangComplete
 ###Visual Studio Code C/C++ completion using Clang
 
 ##Setup
 
-At the moment the completion only works for C.<br>
 You need to have Clang installed, and accessible via your path.
 
 ####Compiler flags
