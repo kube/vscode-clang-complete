@@ -1,20 +1,19 @@
 {
-	"name": "langauge-server-example",
-	"description": "Example implementation of a language server in node.",
-	"version": "0.0.1",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
-	"engines": {
-		"node": "*"
-	},
-	"dependencies": {
-		"vscode-languageserver": "^1.1.0"
-	},
-	"devDependencies": {
-		"typescript": "^1.6.2"
-	},
-	"scripts": {
-		"compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p .",
-		"watch": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc --watch -p ."
-	}
+  "name": "vscode-clangcomplete-server",
+  "version": "0.0.2",
+  "author": "Christophe Feijoo",
+  "license": "MIT",
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "vscode-languageserver": "^2.1.2"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.10"
+  },
+  "scripts": {
+    "compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p .",
+    "watch": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc --watch -p ."
+  }
 }

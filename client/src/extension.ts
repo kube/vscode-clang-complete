@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
 
     let clientOptions: LanguageClientOptions = {
         // Register server for C files
-        documentSelector: ['c'],
+        documentSelector: ['c', 'cpp'],
         synchronize: {
             configurationSection: 'clangComplete',
             fileEvents: workspace.createFileSystemWatcher('**/.clang_complete')

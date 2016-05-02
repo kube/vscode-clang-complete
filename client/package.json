@@ -1,42 +1,43 @@
 {
-	"name": "ClangComplete",
-	"description": "VSCode C/C++ completion using Clang",
-	"author": "Christophe Feijoo",
-	"license": "MIT",
-	"version": "0.0.1",
-	"publisher": "kube",
-	"engines": {
-		"vscode": "0.10.x"
-	},
-	"categories": [
+  "name": "ClangComplete",
+  "description": "VSCode C/C++ completion using Clang",
+  "author": "Christophe Feijoo",
+  "license": "MIT",
+  "version": "0.0.1",
+  "publisher": "kube",
+  "engines": {
+    "vscode": "0.10.x"
+  },
+  "categories": [
     "Languages"
-	],
-	"activationEvents": [
-		"onLanguage:c"
-	],
-	"main": "./out/src/extension",
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "Server Configuration",
-			"properties": {
-				"clangComplete.maxNumberOfProblems": {
-					"type": "number",
-					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
-				}
-			}
-		}
-	},	
-	"scripts": {
-		"vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-		"compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
-	},
-	"devDependencies": {
-		"typescript": "^1.6.2",
-		"vscode": "0.10.x"
-	},
-	"dependencies": {
-		"vscode-languageclient": "^1.1.0"
-	}
+  ],
+  "activationEvents": [
+    "onLanguage:c",
+    "onLanguage:cpp"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Server Configuration",
+      "properties": {
+        "clangComplete.maxNumberOfProblems": {
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.10",
+    "vscode": "^0.11.12"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^2.1.0"
+  }
 }

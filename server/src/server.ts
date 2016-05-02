@@ -4,7 +4,7 @@ import { readFile } from 'fs'
 import { join as joinPath, relative as relativePath } from 'path'
 
 import {
-IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocumentSyncKind, TextDocuments, ITextDocument, InitializeParams, InitializeResult, CompletionItem
+IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocumentSyncKind, TextDocuments, InitializeParams, InitializeResult, CompletionItem
 } from 'vscode-languageserver'
 
 import { ClangCompletionService } from './ClangCompletionService'
@@ -21,7 +21,7 @@ let completionService: ClangCompletionService
 
 function getFlagsFromClangCompleteFile(): Promise<string[]> {
     let promise = new Promise(resolve => {
-        
+
         // Check presence of a .clang_complete file
         let filePath = joinPath(workspaceRoot, './.clang_complete')
 
@@ -42,7 +42,7 @@ connection.onInitialize((params): Promise<InitializeResult> => {
 
         getFlagsFromClangCompleteFile()
             .then(userFlags => {
-            
+
                 // Initialize Completion Service
                 completionService = new ClangCompletionService({
                     userFlags,
@@ -80,7 +80,7 @@ connection.onDidChangeWatchedFiles(notification => {
 })
 
 connection.onCompletion((textDocumentPosition): Promise<CompletionItem[]> => {
-    let document = documents.get(textDocumentPosition.uri)
+    let document = documents.get(textDocumentPosition.textDocument.uri)
     let position = textDocumentPosition.position
 
     return completionService.getCompletion(document, position)
