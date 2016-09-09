@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
   }
 
   const clientOptions: LanguageClientOptions = {
-    // Register server for C files
+    // Register server for C and C++ files
     documentSelector: ['c', 'cpp'],
     synchronize: {
       configurationSection: 'clangComplete',
