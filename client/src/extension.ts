@@ -9,10 +9,10 @@ import {
 
 export function activate(context: ExtensionContext) {
 
-  let serverModule = context.asAbsolutePath(path.join('server', 'server.js'))
-  let debugOptions = { execArgv: ["--nolazy", "--debug=6004"] }
+  const serverModule = context.asAbsolutePath(path.join('server', 'server.js'))
+  const debugOptions = { execArgv: ["--nolazy", "--debug=6004"] }
 
-  let serverOptions: ServerOptions = {
+  const serverOptions: ServerOptions = {
     run: {
       module: serverModule,
       transport: TransportKind.ipc
@@ -24,7 +24,7 @@ export function activate(context: ExtensionContext) {
     }
   }
 
-  let clientOptions: LanguageClientOptions = {
+  const clientOptions: LanguageClientOptions = {
     // Register server for C files
     documentSelector: ['c', 'cpp'],
     synchronize: {
@@ -33,7 +33,7 @@ export function activate(context: ExtensionContext) {
     }
   }
 
-  let disposable = new LanguageClient('ClangComplete', serverOptions, clientOptions).start()
+  const disposable = new LanguageClient('ClangComplete', serverOptions, clientOptions).start()
 
   context.subscriptions.push(disposable)
 }
