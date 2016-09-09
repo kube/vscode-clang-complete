@@ -12,6 +12,7 @@ const formatDetail = (detail: string) =>
 
 /**
  * Get CompletionItemKind from formatted detail
+ * TODO: RegExes need rework and flow optimization
  */
 const itemKind = (detail: string) =>
   // is a Macro Function?
@@ -37,7 +38,7 @@ const itemKind = (detail: string) =>
 
 /**
  * Get Clang completion output and format it for VSCode
- * This function would be more optimized with function composition
+ * TODO: This function would be more optimized with function composition
  * or pipeline on item instead of array
  */
 export const completionList = (output: string) =>
