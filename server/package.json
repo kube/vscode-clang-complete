@@ -13,6 +13,7 @@
     "typescript": "^2.0.2"
   },
   "scripts": {
+    "postinstall": "typings install",
     "compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p .",
     "watch": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc --watch -p ."
   }
