@@ -30,6 +30,7 @@ export class ClangCompletionService {
       .concat(this._userFlags)
       .concat([
         '-fsyntax-only',
+        '-code-completion-macros',
         clangFrontend,
         '-code-completion-at',
         `-:${line + 1}:${character + 1}`
