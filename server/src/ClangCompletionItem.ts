@@ -30,11 +30,26 @@ export class ClangCompletionItem {
       .trim()
   }
 
+  private getItemKind(type: string): CompletionItemKind {
+    if (type.match(/.*\(.*\)/)) {
+      return CompletionItemKind.Function
+    }
+    else if (type.match(/^enum /)) {
+      return CompletionItemKind.Enum
+    }
+    else if (type.match(/^[^ ()*]+$/)) {
+      return CompletionItemKind.Keyword
+    }
+    else {
+      return CompletionItemKind.Variable
+    }
+  }
+
   build(): CompletionItem {
     return {
       label: this.name,
       detail: this.formatType(this.type),
-      kind: CompletionItemKind.Function
+      kind: this.getItemKind(this.formatType(this.type))
     }
   }
 }
