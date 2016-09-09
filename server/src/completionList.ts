@@ -38,8 +38,11 @@ const itemKind = (detail: string) =>
 
 /**
  * Get Clang completion output and format it for VSCode
+ *
  * TODO: This function would be more optimized with function composition
  * or pipeline on item instead of array
+ *
+ * TODO: Use stream as input
  */
 export const completionList = (output: string) =>
   output
