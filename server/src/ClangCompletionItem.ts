@@ -19,7 +19,7 @@ export class ClangCompletionItem {
     return { name, type }
   }
 
-  private formatType(type: string): string {
+  private cleanType(type: string): string {
     // Quick and dirty cleaning
     if (!type) {
       return ''
@@ -30,16 +30,32 @@ export class ClangCompletionItem {
       .trim()
   }
 
-  private getItemKind(type: string): CompletionItemKind {
-    if (type.match(/.*\(.*\)/)) {
+  private itemKind(type: string): CompletionItemKind {
+    // is a Macro Function?
+    if (type.match(/^[^a-z ]+\(.*\)/)) {
       return CompletionItemKind.Function
     }
+    // is a Function?
+    else if (type.match(/.*\(.*\)/)) {
+      return CompletionItemKind.Function
+    }
+    // is an Enum?
     else if (type.match(/^enum /)) {
       return CompletionItemKind.Enum
     }
+    // is a Pointer or a Reference?
+    else if (type.match(/.*[*&]+/)) {
+      return CompletionItemKind.Reference
+    }
+    // is an Object Macro?
+    else if (type.match(/^[^a-z]+$/)) {
+      return CompletionItemKind.Snippet
+    }
+    // is a Type?
     else if (type.match(/^[^ ()*]+$/)) {
       return CompletionItemKind.Keyword
     }
+    // is a Variable
     else {
       return CompletionItemKind.Variable
     }
@@ -48,8 +64,8 @@ export class ClangCompletionItem {
   build(): CompletionItem {
     return {
       label: this.name,
-      detail: this.formatType(this.type),
-      kind: this.getItemKind(this.formatType(this.type))
+      detail: this.cleanType(this.type),
+      kind: this.itemKind(this.cleanType(this.type))
     }
   }
 }
