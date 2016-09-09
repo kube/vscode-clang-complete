@@ -1,4 +1,17 @@
+import { exec } from 'child_process'
+import { TextDocument, Position } from 'vscode-languageserver'
 import { CompletionItemKind } from 'vscode-languageserver'
+
+export interface IConfig {
+  workspaceRoot: string,
+  userFlags: string[]
+}
+
+export interface ICompletionItem {
+  label: string,
+  detail: string,
+  kind: CompletionItemKind
+}
 
 /**
  * Format Clang detail output to be readable
@@ -12,7 +25,7 @@ const formatDetail = (detail: string) =>
 
 /**
  * Get CompletionItemKind from formatted detail
- * TODO: RegExes need rework and flow optimization
+ * TODO: RegExes need rework and flow needs optimization
  */
 const itemKind = (detail: string) =>
   // is a Macro Function?
@@ -44,7 +57,7 @@ const itemKind = (detail: string) =>
  *
  * TODO: Use stream as input
  */
-export const completionList = (output: string) =>
+const completionList = (output: string): ICompletionItem[] =>
   output
     .split('\n')
 
@@ -76,3 +89,38 @@ export const completionList = (output: string) =>
       detail: detail,
       kind: itemKind(detail)
     }))
+
+/**
+ * Build Clang shell command
+ */
+const buildCommand = (userFlags: string[], position: Position,
+  languageId: string) => ['clang', '-cc1']
+    .concat(userFlags)
+    .concat([
+      '-fsyntax-only',
+      languageId === 'c' ? '-xc' : '-xc++',
+      '-code-completion-macros',
+      '-code-completion-at',
+      `-:${position.line + 1}:${position.character + 1}`
+    ])
+    .join(' ')
+
+/**
+ * Get Clang completion correctly formatted for VSCode
+ */
+export const getCompletion = (config: IConfig, document: TextDocument,
+  position: Position): Promise<ICompletionItem[]> =>
+  new Promise(resolve => {
+    let command = buildCommand(config.userFlags, position, document.languageId)
+    let execOptions = { cwd: config.workspaceRoot }
+
+    let child = exec(command, execOptions, (err, stdout, stderr) => {
+      // Omit errors, simply read stdout for clang completions
+      let completions = completionList(stdout.toString())
+      resolve(completions)
+    })
+
+    // Pass code to clang via stdin
+    child.stdin.write(document.getText())
+    child.stdin.emit('end')
+  })

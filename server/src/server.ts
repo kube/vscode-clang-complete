@@ -7,7 +7,7 @@ import {
   IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocumentSyncKind, TextDocuments, InitializeParams, InitializeResult, CompletionItem
 } from 'vscode-languageserver'
 
-import { getCompletion } from './getCompletion'
+import { getCompletion } from './completion'
 
 
 let connection = createConnection(new IPCMessageReader(process),
