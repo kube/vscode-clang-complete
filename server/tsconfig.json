@@ -1,12 +1,12 @@
 {
-	"compilerOptions": {
-		"target": "ES5",
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"sourceMap": true,
-		"outDir": "../client/server"
-	},
-	"exclude": [
-		"node_modules"
-	]
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "../client/server"
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
