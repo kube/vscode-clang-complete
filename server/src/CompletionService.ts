@@ -1,20 +1,19 @@
 import { exec } from 'child_process'
 import { TextDocument, Position } from 'vscode-languageserver'
-import { ClangCompletionList } from './ClangCompletionList'
+import { completionList } from './completionList'
 
 export interface CompletionServiceParams {
   workspaceRoot: string
   userFlags: string[]
 }
 
-export class ClangCompletionService {
-
-  private _userFlags: string[]
-  private _workspaceRoot: string
+export class CompletionService {
+  private userFlags: string[]
+  private workspaceRoot: string
 
   constructor(params: CompletionServiceParams) {
-    this._userFlags = params.userFlags || []
-    this._workspaceRoot = params.workspaceRoot
+    this.userFlags = params.userFlags || []
+    this.workspaceRoot = params.workspaceRoot
   }
 
   private buildCommand(line: number, character: number, languageId: string) {
@@ -27,7 +26,7 @@ export class ClangCompletionService {
     return [
       'clang',
       '-cc1']
-      .concat(this._userFlags)
+      .concat(this.userFlags)
       .concat([
         '-fsyntax-only',
         '-code-completion-macros',
@@ -39,7 +38,7 @@ export class ClangCompletionService {
   }
 
   setUserFlags(userFlags: string[]) {
-    this._userFlags = userFlags || []
+    this.userFlags = userFlags || []
   }
 
   getCompletion(document: TextDocument, position: Position) {
@@ -50,15 +49,13 @@ export class ClangCompletionService {
         document.languageId)
 
       let execOptions = {
-        cwd: this._workspaceRoot
+        cwd: this.workspaceRoot
       }
 
       let child = exec(command, execOptions, function (err, stdout, stderr) {
         // Omit errors, simply read stdout for clang completions
-        let completions = new ClangCompletionList(stdout.toString())
-        let completionItemsArray = completions.build()
-
-        resolve(completionItemsArray)
+        let completions = completionList(stdout.toString())
+        resolve(completions)
       })
 
       // Pass code to clang via stdin

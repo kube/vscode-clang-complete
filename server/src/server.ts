@@ -7,7 +7,7 @@ import {
   IPCMessageReader, IPCMessageWriter, createConnection, IConnection, TextDocumentSyncKind, TextDocuments, InitializeParams, InitializeResult, CompletionItem
 } from 'vscode-languageserver'
 
-import { ClangCompletionService } from './ClangCompletionService'
+import { CompletionService } from './CompletionService'
 
 
 let connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process))
@@ -16,7 +16,7 @@ let documents: TextDocuments = new TextDocuments()
 documents.listen(connection)
 
 let workspaceRoot: string
-let completionService: ClangCompletionService
+let completionService: CompletionService
 
 
 function getFlagsFromClangCompleteFile(): Promise<string[]> {
@@ -44,7 +44,7 @@ connection.onInitialize((params): Promise<InitializeResult> => {
       .then(userFlags => {
 
         // Initialize Completion Service
-        completionService = new ClangCompletionService({
+        completionService = new CompletionService({
           userFlags,
           workspaceRoot
         })
