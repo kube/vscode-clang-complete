@@ -69,7 +69,7 @@ const completionList = (output: string): ICompletionItem[] =>
     .map(line => line.substring(11))
 
     // Split label and detail
-    .map(line => line.split(':'))
+    .map(line => line.split(/:(.+)?/))
 
     // Array to formatted object
     .map(([label, detail]) => ({
