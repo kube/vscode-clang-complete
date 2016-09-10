@@ -63,7 +63,7 @@ const completionList = (output: string): ICompletionItem[] =>
 
     // Keep only completion lines
     .filter(line =>
-      line.match(/^COMPLETION/))
+      /^COMPLETION/.test(line))
 
     // Remove `COMPLETION:` at beginning of line
     .map(line => line.substring(11))
