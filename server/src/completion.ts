@@ -131,6 +131,12 @@ export const getCompletion = (config: IConfig, document: TextDocument,
       return Promise.resolve(null)
     }
 
+    // Get real completion column
+    // Clang won't give correct completion if token is already partially typed
+    while (!isDelimiter(lineContent[column - 1])) {
+      column--
+    }
+
     let command = buildCommand(config.userFlags, {
       line: position.line,
       character: column
