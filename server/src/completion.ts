@@ -106,12 +106,35 @@ const buildCommand = (userFlags: string[], position: Position,
     .join(' ')
 
 /**
+ * Helper when checking completion start column
+ */
+const isDelimiter = (char: string) =>
+  '~`!@#$%^&*()-+={}[]|\\\'";:/?<>,. \t\n'.indexOf(char) !== -1
+
+/**
  * Get Clang completion correctly formatted for VSCode
  */
 export const getCompletion = (config: IConfig, document: TextDocument,
   position: Position): Promise<ICompletionItem[]> =>
   new Promise(resolve => {
-    let command = buildCommand(config.userFlags, position, document.languageId)
+    let text = document.getText()
+
+    // Prevent completion when typing first `:`
+    // TODO: Optimize (Use of split will be slow on big files)
+    let lineContent = text.split('\n')[position.line]
+    let column = position.character
+
+    // Check for scope operator (::)
+    // If scope operator not entirely typed return no completion
+    if (lineContent[column - 1] === ':'
+      && lineContent[column - 2] !== ':') {
+      return Promise.resolve(null)
+    }
+
+    let command = buildCommand(config.userFlags, {
+      line: position.line,
+      character: column
+    }, document.languageId)
     let execOptions = { cwd: config.workspaceRoot }
 
     let child = exec(command, execOptions, (err, stdout, stderr) => {
@@ -121,6 +144,6 @@ export const getCompletion = (config: IConfig, document: TextDocument,
     })
 
     // Pass code to clang via stdin
-    child.stdin.write(document.getText())
+    child.stdin.write(text)
     child.stdin.emit('end')
   })
