@@ -19,7 +19,6 @@ Optional flags for Clang can be defined in a `.clang_complete` file at the *root
 
 - Objective-C support
 - Precompiled Headers
-- Better completion, even when typing in already started token.
 - Completion of functions parameters
 - Type-check on Hover
 - Linter
