@@ -1,18 +1,19 @@
 {
   "name": "vscode-clangcomplete-server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Christophe Feijoo",
   "license": "MIT",
   "engines": {
     "node": "*"
   },
   "dependencies": {
-    "vscode-languageserver": "^2.1.2"
+    "vscode-languageserver": "^2.4.0-next.11"
   },
   "devDependencies": {
-    "typescript": "^1.8.10"
+    "typescript": "^2.0.2"
   },
   "scripts": {
+    "postinstall": "typings install",
     "compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p .",
     "watch": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc --watch -p ."
   }

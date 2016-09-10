@@ -1,9 +1,9 @@
 {
-  "name": "ClangComplete",
+  "name": "clangcomplete",
   "description": "VSCode C/C++ completion using Clang",
   "author": "Christophe Feijoo",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "kube",
   "repository": {
     "type": "git",
@@ -38,14 +38,15 @@
     }
   },
   "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install && typings install",
     "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
     "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
   },
   "devDependencies": {
-    "typescript": "^1.8.10",
-    "vscode": "^0.11.12"
+    "typescript": "^2.0.2",
+    "vscode": "^0.11.18"
   },
   "dependencies": {
-    "vscode-languageclient": "^2.1.0"
+    "vscode-languageclient": "^2.4.2-next.24"
   }
 }
