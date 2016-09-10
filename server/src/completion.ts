@@ -126,8 +126,8 @@ export const getCompletion = (config: IConfig, document: TextDocument,
 
     // Check for scope operator (::)
     // If scope operator not entirely typed return no completion
-    if (lineContent[column - 1] === ':'
-      && lineContent[column - 2] !== ':') {
+    if (lineContent.charAt(column - 1) === ':'
+      && lineContent.charAt(column - 2) !== ':') {
       return Promise.resolve(null)
     }
 
