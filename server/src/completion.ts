@@ -133,7 +133,7 @@ export const getCompletion = (config: IConfig, document: TextDocument,
 
     // Get real completion column
     // Clang won't give correct completion if token is already partially typed
-    while (!isDelimiter(lineContent[column - 1])) {
+    while (column > 0 && !isDelimiter(lineContent.charAt(column - 1))) {
       column--
     }
 
