@@ -78,4 +78,6 @@ connection.onCompletion(textDocumentPosition => {
   return getCompletion(config, document, position)
 })
 
+connection.onCompletionResolve(item => item)
+
 connection.listen()
