@@ -22,7 +22,6 @@ const config = {
   userFlags: [] as string[]
 }
 
-
 const getFlagsFromClangCompleteFile = (): Promise<string[]> =>
   new Promise(resolve => {
     // Check presence of a .clang_complete file
@@ -34,7 +33,6 @@ const getFlagsFromClangCompleteFile = (): Promise<string[]> =>
       resolve(userFlags)
     })
   })
-
 
 connection.onInitialize((params): Promise<InitializeResult> =>
   new Promise(resolve =>
@@ -60,7 +58,6 @@ connection.onInitialize((params): Promise<InitializeResult> =>
       })
   ))
 
-
 connection.onDidChangeWatchedFiles(notification => {
   // Remove file:// protocol at beginning of uri
   let fileAbsolutePath = notification.changes[0].uri.substring(5)
@@ -74,12 +71,13 @@ connection.onDidChangeWatchedFiles(notification => {
   }
 })
 
-
-connection.onCompletion((textDocumentPosition): Promise<CompletionItem[]> => {
+connection.onCompletion(textDocumentPosition => {
   let document = documents.get(textDocumentPosition.textDocument.uri)
   let position = textDocumentPosition.position
 
   return getCompletion(config, document, position)
 })
+
+connection.onCompletionResolve(item => item)
 
 connection.listen()

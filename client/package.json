@@ -1,9 +1,10 @@
 {
   "name": "clangcomplete",
-  "description": "VSCode C/C++ completion using Clang",
+  "displayName": "ClangComplete",
+  "description": "C/C++ completion using Clang",
   "author": "Christophe Feijoo",
   "license": "MIT",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "kube",
   "repository": {
     "type": "git",
