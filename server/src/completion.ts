@@ -1,3 +1,13 @@
+
+      /*#######.
+     ########",#:
+   #########',##".
+  ##'##'## .##',##.
+   ## ## ## # ##",#.
+    ## ## ## ## ##'
+     ## ## ## :##
+      ## ## ##*/
+
 import { exec } from 'child_process'
 import { TextDocument, Position } from 'vscode-languageserver'
 import { CompletionItemKind } from 'vscode-languageserver'
