@@ -11,6 +11,7 @@
 import { exec } from 'child_process'
 import { TextDocument, Position } from 'vscode-languageserver'
 import { CompletionItemKind } from 'vscode-languageserver'
+import when from 'when-switch'
 
 export interface IConfig {
   workspaceRoot: string,
@@ -38,26 +39,21 @@ const formatDetail = (detail: string) =>
  * TODO: RegExes need rework and flow needs optimization
  */
 const itemKind = (detail: string) =>
-  // is a Macro Function?
-  detail.match(/^[^a-z ]+\(.*\)/) ?
-    CompletionItemKind.Function
-    // is a Function?
-    : detail.match(/.*\(.*\)/) ?
-      CompletionItemKind.Function
-      // is an Enum?
-      : detail.match(/^enum /) ?
-        CompletionItemKind.Enum
-        // is a Pointer or a Reference?
-        : detail.match(/.*[*&]+/) ?
-          CompletionItemKind.Reference
-          // is an Object Macro?
-          : detail.match(/^[^a-z]+$/) ?
-            CompletionItemKind.Snippet
-            // is a Type?
-            : detail.match(/^[^ ()*]+$/) ?
-              CompletionItemKind.Keyword
-              // is a Variable
-              : CompletionItemKind.Variable
+  when(detail)
+    // is a Macro Function
+    .match(/^[^a-z ]+\(.*\)/, CompletionItemKind.Function)
+    // is a Function
+    .match(/.*\(.*\)/, CompletionItemKind.Function)
+    // is an Enum
+    .match(/^enum /, CompletionItemKind.Enum)
+    // is a Pointer or a Reference
+    .match(/.*[*&]+/, CompletionItemKind.Reference)
+    // is an Object Macro
+    .match(/^[^a-z]+$/, CompletionItemKind.Snippet)
+    // is a Type
+    .match(/^[^ ()*]+$/, CompletionItemKind.Keyword)
+    // is a Variable
+    .else(CompletionItemKind.Variable)
 
 /**
  * Get Clang completion output and format it for VSCode
