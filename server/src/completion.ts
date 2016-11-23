@@ -28,10 +28,11 @@ export interface ICompletionItem {
  * Format Clang detail output to be readable
  */
 const formatDetail = (detail: string) =>
-  detail ? detail
-    .replace('#]', ' ')
-    .replace(/([<\[]#)|(#>)/g, '')
-    .trim()
+  detail ?
+    detail
+      .replace('#]', ' ')
+      .replace(/([<\[]#)|(#>)/g, '')
+      .trim()
     : ''
 
 /**
