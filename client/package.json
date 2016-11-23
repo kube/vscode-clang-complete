@@ -40,11 +40,12 @@
     }
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install && typings install",
+    "postinstall": "node ./node_modules/vscode/bin/install",
     "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
     "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
   },
   "devDependencies": {
+    "@types/node": "^6.0.50",
     "typescript": "^2.0.2",
     "vscode": "^0.11.18"
   },
