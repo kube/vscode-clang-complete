@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/kube/vscode-clang-complete",
   "engines": {
-    "vscode": "0.10.x"
+    "vscode": "^1.5.0"
   },
   "categories": [
     "Languages"
@@ -47,9 +47,9 @@
   "devDependencies": {
     "@types/node": "^6.0.50",
     "typescript": "^2.1.1",
-    "vscode": "^0.11.18"
+    "vscode": "^1.0.3"
   },
   "dependencies": {
-    "vscode-languageclient": "^2.4.2-next.24"
+    "vscode-languageclient": "^2.6.3"
   }
 }
