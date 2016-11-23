@@ -11,10 +11,11 @@
     "when-switch": "^0.2.0"
   },
   "devDependencies": {
+    "@types/es6-promise": "0.0.32",
+    "@types/node": "^6.0.50",
     "typescript": "^2.0.2"
   },
   "scripts": {
-    "postinstall": "typings install",
     "compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p .",
     "watch": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc --watch -p ."
   }
