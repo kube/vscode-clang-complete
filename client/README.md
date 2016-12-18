@@ -1,7 +1,4 @@
-<img src="../logo.png" width=220/>
-
-# ClangComplete
-> Visual Studio Code C/C++ completion using Clang
+### Visual Studio Code C/C++ completion using Clang
 
 ## Setup
 
