@@ -8,10 +8,11 @@
      ## ## ## :##
       ## ## ##*/
 
+import when from 'when-switch'
 import { exec } from 'child_process'
 import { TextDocument, Position } from 'vscode-languageserver'
 import { CompletionItemKind } from 'vscode-languageserver'
-import when from 'when-switch'
+
 
 export interface IConfig {
   workspaceRoot: string,
@@ -100,63 +101,65 @@ const completionList = (output: string): ICompletionItem[] =>
 /**
  * Build Clang shell command
  */
-const buildCommand = (userFlags: string[], position: Position,
-  languageId: string) => ['clang', '-cc1']
-    .concat(userFlags)
-    .concat([
+const buildCommand =
+  (userFlags: string[], position: Position, languageId: string) =>
+    [
+      'clang',
+      '-cc1',
+      ...userFlags,
       '-fsyntax-only',
       languageId === 'c' ? '-xc' : '-xc++',
       '-code-completion-macros',
       '-code-completion-at',
       `-:${position.line + 1}:${position.character + 1}`
-    ])
-    .join(' ')
+    ]
+      .join(' ')
 
 /**
  * Helper when checking completion start column
  */
 const isDelimiter = (char: string) =>
-  '~`!@#$%^&*()-+={}[]|\\\'";:/?<>,. \t\n'.indexOf(char) !== -1
+  '~`!@#$%^&*()-+={}[]|\\\'";:/?<>,. \t\n'.includes(char)
 
 /**
  * Get Clang completion correctly formatted for VSCode
  */
-export const getCompletion = (config: IConfig, document: TextDocument,
-  position: Position): Promise<ICompletionItem[]> =>
-  new Promise(resolve => {
-    let text = document.getText()
+export const getCompletion =
+  (config: IConfig, document: TextDocument, position: Position)
+    : Promise<ICompletionItem[]> =>
 
-    // Prevent completion when typing first `:`
-    // TODO: Optimize (Use of split will be slow on big files)
-    let lineContent = text.split('\n')[position.line]
-    let column = position.character
+    new Promise(resolve => {
+      const text = document.getText()
 
-    // Check for scope operator (::)
-    // If scope operator not entirely typed return no completion
-    if (lineContent.charAt(column - 1) === ':'
-      && lineContent.charAt(column - 2) !== ':') {
-      return Promise.resolve(null)
-    }
+      // Prevent completion when typing first `:`
+      // TODO: Optimize (Use of split will be slow on big files)
+      const lineContent = text.split('\n')[position.line]
+      let column = position.character
 
-    // Get real completion column
-    // Clang won't give correct completion if token is already partially typed
-    while (column > 0 && !isDelimiter(lineContent.charAt(column - 1))) {
-      column--
-    }
+      // Check for scope operator (::)
+      // If scope operator not entirely typed return no completion
+      if (lineContent.charAt(column - 1) === ':'
+        && lineContent.charAt(column - 2) !== ':') {
+        return Promise.resolve(null)
+      }
 
-    let command = buildCommand(config.userFlags, {
-      line: position.line,
-      character: column
-    }, document.languageId)
-    let execOptions = { cwd: config.workspaceRoot }
+      // Get real completion column
+      // Clang won't give correct completion if token is already partially typed
+      while (column > 0 && !isDelimiter(lineContent.charAt(column - 1))) {
+        column--
+      }
 
-    let child = exec(command, execOptions, (err, stdout, stderr) => {
-      // Omit errors, simply read stdout for clang completions
-      let completions = completionList(stdout.toString())
-      resolve(completions)
+      const command = buildCommand(config.userFlags, {
+        line: position.line,
+        character: column
+      }, document.languageId)
+      const execOptions = { cwd: config.workspaceRoot }
+
+      const child = exec(command, execOptions, (err, stdout, stderr) =>
+        // Omit errors, simply read stdout for clang completions
+        resolve(completionList(stdout))
+      )
+
+      // Pass code to clang via stdin
+      child.stdin.end(text)
     })
-
-    // Pass code to clang via stdin
-    child.stdin.write(text)
-    child.stdin.emit('end')
-  })

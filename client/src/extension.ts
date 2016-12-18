@@ -10,17 +10,18 @@
 
 'use strict'
 
-import * as path from 'path'
+import { join } from 'path'
 import { workspace, Disposable, ExtensionContext } from 'vscode'
-
 import {
-  LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, TransportKind
+  LanguageClient, LanguageClientOptions,
+  SettingMonitor, ServerOptions, TransportKind
 } from 'vscode-languageclient'
+
 
 export function activate(context: ExtensionContext) {
 
-  const serverModule = context.asAbsolutePath(path.join('server', 'server.js'))
-  const debugOptions = { execArgv: ["--nolazy", "--debug=6004"] }
+  const serverModule = context.asAbsolutePath(join('server', 'server.js'))
+  const debugOptions = { execArgv: ['--nolazy', '--debug=6004'] }
 
   const serverOptions: ServerOptions = {
     run: {
@@ -43,7 +44,8 @@ export function activate(context: ExtensionContext) {
     }
   }
 
-  const disposable = new LanguageClient('ClangComplete', serverOptions, clientOptions).start()
+  const disposable =
+    new LanguageClient('ClangComplete', serverOptions, clientOptions).start()
 
   context.subscriptions.push(disposable)
 }
