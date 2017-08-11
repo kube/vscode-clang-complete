@@ -56,6 +56,7 @@ connection.onInitialize(params =>
         // Initialize config
         config.userFlags = userFlags
         config.workspaceRoot = params.rootPath
+        console.log("Initializing Clang completions")
 
         resolve({
           capabilities: {

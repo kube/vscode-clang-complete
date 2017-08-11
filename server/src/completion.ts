@@ -12,6 +12,8 @@ import when from 'when-switch'
 import { exec } from 'child_process'
 import { TextDocument, Position } from 'vscode-languageserver'
 import { CompletionItemKind } from 'vscode-languageserver'
+import Uri from 'vscode-uri'
+import * as path from 'path'
 
 
 export interface IConfig {
@@ -102,16 +104,16 @@ const completionList = (output: string): ICompletionItem[] =>
  * Build Clang shell command
  */
 const buildCommand =
-  (userFlags: string[], position: Position, languageId: string) =>
+  (userFlags: string[], position: Position, doc: TextDocument) =>
     [
       'clang',
-      '-cc1',
-      ...userFlags,
       '-fsyntax-only',
-      languageId === 'c' ? '-xc' : '-xc++',
-      '-code-completion-macros',
-      '-code-completion-at',
-      `-:${position.line + 1}:${position.character + 1}`
+      ...userFlags,
+      `-I${path.dirname(Uri.parse(doc.uri).fsPath)}`,
+      doc.languageId === 'c' ? '-x c' : '-x c++',
+      '-Xclang',
+      `-code-completion-at=-:${position.line + 1}:${position.character + 1}`,
+      `-`
     ]
       .join(' ')
 
@@ -152,12 +154,15 @@ export const getCompletion =
       const command = buildCommand(config.userFlags, {
         line: position.line,
         character: column
-      }, document.languageId)
+      }, document)
+      console.log(command)
       const execOptions = { cwd: config.workspaceRoot }
 
-      const child = exec(command, execOptions, (err, stdout, stderr) =>
+      const child = exec(command, execOptions, (err, stdout, stderr) => {
         // Omit errors, simply read stdout for clang completions
+        console.log(err)
         resolve(completionList(stdout))
+      }
       )
 
       // Pass code to clang via stdin

@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "vscode-languageserver": "^2.6.2",
-    "when-switch": "^0.2.0"
+    "when-switch": "^0.2.0",
+    "path": "*",
+    "vscode-uri":"^1.0.1"
   },
   "devDependencies": {
     "@types/node": "^6.0.50",
