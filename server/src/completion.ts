@@ -108,11 +108,13 @@ const buildCommand =
     [
       'clang',
       '-fsyntax-only',
+      '-fparse-all-comments',
       ...userFlags,
       `-I${path.dirname(Uri.parse(doc.uri).fsPath)}`,
       doc.languageId === 'c' ? '-x c' : '-x c++',
-      '-Xclang',
-      `-code-completion-at=-:${position.line + 1}:${position.character + 1}`,
+      '-Xclang', '-code-completion-macros',
+      '-Xclang', '-code-completion-brief-comments',
+      '-Xclang', `-code-completion-at=-:${position.line + 1}:${position.character + 1}`,
       `-`
     ]
       .join(' ')
