@@ -157,12 +157,10 @@ export const getCompletion =
         line: position.line,
         character: column
       }, document)
-      console.log(command)
       const execOptions = { cwd: config.workspaceRoot }
 
       const child = exec(command, execOptions, (err, stdout, stderr) => {
         // Omit errors, simply read stdout for clang completions
-        console.log(err)
         resolve(completionList(stdout))
       }
       )
