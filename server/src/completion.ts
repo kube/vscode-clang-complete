@@ -10,15 +10,14 @@
 
 import when from 'when-switch'
 import { exec } from 'child_process'
-import { TextDocument, Position } from 'vscode-languageserver'
-import { CompletionItemKind } from 'vscode-languageserver'
+import { config } from './config'
+import {
+  TextDocument,
+  Position,
+  CompletionItemKind
+} from 'vscode-languageserver'
 
-export interface IConfig {
-  workspaceRoot: string
-  userFlags: string[]
-}
-
-export interface ICompletionItem {
+export type CompletionItem = {
   label: string
   detail: string
   kind: CompletionItemKind
@@ -29,11 +28,9 @@ export interface ICompletionItem {
  */
 const formatDetail = (detail: string) =>
   detail
-    ? detail
-        .replace('#]', ' ')
-        .replace(/([<\[]#)|(#>)/g, '')
-        .trim()
-    : ''
+    .replace('#]', ' ')
+    .replace(/([<\[]#)|(#>)/g, '')
+    .trim()
 
 /**
  * Get CompletionItemKind from formatted detail
@@ -64,7 +61,7 @@ const itemKind = (detail: string) =>
  *
  * TODO: Use stream as input
  */
-const completionList = (output: string): ICompletionItem[] =>
+const completionList = (output: string): CompletionItem[] =>
   output
     .split('\n')
 
@@ -79,8 +76,8 @@ const completionList = (output: string): ICompletionItem[] =>
 
     // Array to formatted object
     .map(([label, detail]) => ({
-      label: label ? label.trim() : null,
-      detail: detail ? detail.trim() : null
+      label: label ? label.trim() : '',
+      detail: detail ? detail.trim() : ''
     }))
 
     // Format detail with readable type
@@ -125,10 +122,9 @@ const isDelimiter = (char: string) =>
  * Get Clang completion correctly formatted for VSCode
  */
 export const getCompletion = (
-  config: IConfig,
   document: TextDocument,
   position: Position
-): Promise<ICompletionItem[]> =>
+): Promise<CompletionItem[]> =>
   new Promise(resolve => {
     const text = document.getText()
 
@@ -160,7 +156,7 @@ export const getCompletion = (
       },
       document.languageId
     )
-    const execOptions = { cwd: config.workspaceRoot }
+    const execOptions = { cwd: config.workspaceRoot || '' }
 
     const child = exec(command, execOptions, (err, stdout, stderr) =>
       // Omit errors, simply read stdout for clang completions

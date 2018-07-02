@@ -11,6 +11,7 @@
 import { readFile } from 'fs'
 import { join, relative } from 'path'
 import { getCompletion } from './completion'
+import { config } from './config'
 import {
   IPCMessageReader,
   IPCMessageWriter,
@@ -26,15 +27,10 @@ const connection = createConnection(
 const documents = new TextDocuments()
 documents.listen(connection)
 
-const config = {
-  workspaceRoot: '',
-  userFlags: [] as string[]
-}
-
 const getFlagsFromClangCompleteFile = () =>
   new Promise<string[]>(resolve => {
     // Check presence of a .clang_complete file
-    const filePath = join(config.workspaceRoot, './.clang_complete')
+    const filePath = join(config.workspaceRoot || '', './.clang_complete')
 
     //TODO: Should check if file exist, and reject error when appropriate
     readFile(
@@ -54,7 +50,7 @@ connection.onInitialize(
       getFlagsFromClangCompleteFile().then(userFlags => {
         // Initialize config
         config.userFlags = userFlags
-        config.workspaceRoot = params.rootPath
+        config.workspaceRoot = params.rootUri
 
         resolve({
           capabilities: {
@@ -75,7 +71,10 @@ connection.onInitialize(
 connection.onDidChangeWatchedFiles(notification => {
   // Remove file:// protocol at beginning of uri
   const fileAbsolutePath = notification.changes[0].uri.substring(5)
-  const fileRelativePath = relative(config.workspaceRoot, fileAbsolutePath)
+  const fileRelativePath = relative(
+    config.workspaceRoot || '',
+    fileAbsolutePath
+  )
 
   // If file is .clang_complete at workspace root
   if (fileRelativePath === '.clang_complete')
@@ -85,10 +84,10 @@ connection.onDidChangeWatchedFiles(notification => {
 })
 
 connection.onCompletion(textDocumentPosition => {
-  const document = documents.get(textDocumentPosition.textDocument.uri)
+  const textDocument = documents.get(textDocumentPosition.textDocument.uri)
   const position = textDocumentPosition.position
 
-  return getCompletion(config, document, position)
+  return textDocument ? getCompletion(textDocument, position) : []
 })
 
 connection.onCompletionResolve(item => item)
