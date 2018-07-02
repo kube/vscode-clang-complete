@@ -11,11 +11,10 @@
 'use strict'
 
 import { join } from 'path'
-import { workspace, Disposable, ExtensionContext } from 'vscode'
+import { workspace, ExtensionContext } from 'vscode'
 import {
   LanguageClient,
   LanguageClientOptions,
-  SettingMonitor,
   ServerOptions,
   TransportKind
 } from 'vscode-languageclient'
