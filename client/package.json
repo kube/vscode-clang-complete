@@ -19,7 +19,7 @@
     "vscode": "^1.5.0"
   },
   "categories": [
-    "Languages"
+    "Programming Languages"
   ],
   "activationEvents": [
     "onLanguage:c",
