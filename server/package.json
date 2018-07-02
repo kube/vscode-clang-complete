@@ -7,12 +7,12 @@
     "node": "*"
   },
   "dependencies": {
-    "vscode-languageserver": "^2.6.2",
-    "when-switch": "^0.2.0"
+    "vscode-languageserver": "^4.2.1",
+    "when-switch": "^0.3.1"
   },
   "devDependencies": {
-    "@types/node": "^6.0.50",
-    "typescript": "^2.1.1"
+    "@types/node": "^10.5.1",
+    "typescript": "^2.9.2"
   },
   "scripts": {
     "compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p .",

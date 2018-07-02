@@ -45,11 +45,11 @@
     "compile": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/node": "^6.0.50",
-    "typescript": "^2.1.1",
-    "vscode": "^1.0.3"
+    "@types/node": "^10.5.1",
+    "typescript": "^2.9.2",
+    "vscode": "^1.1.18"
   },
   "dependencies": {
-    "vscode-languageclient": "^2.6.3"
+    "vscode-languageclient": "^4.2.1"
   }
 }
