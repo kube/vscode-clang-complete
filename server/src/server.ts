@@ -12,20 +12,19 @@ import { readFile } from 'fs'
 import { join, relative } from 'path'
 import { getCompletion } from './completion'
 import {
-  IPCMessageReader, IPCMessageWriter,
-  createConnection, TextDocuments
+  IPCMessageReader,
+  IPCMessageWriter,
+  createConnection,
+  TextDocuments
 } from 'vscode-languageserver'
 
-
-const connection =
-  createConnection(
-    new IPCMessageReader(process),
-    new IPCMessageWriter(process)
-  )
+const connection = createConnection(
+  new IPCMessageReader(process),
+  new IPCMessageWriter(process)
+)
 
 const documents = new TextDocuments()
 documents.listen(connection)
-
 
 const config = {
   workspaceRoot: '',
@@ -34,25 +33,25 @@ const config = {
 
 const getFlagsFromClangCompleteFile = () =>
   new Promise<string[]>(resolve => {
-
     // Check presence of a .clang_complete file
     const filePath = join(config.workspaceRoot, './.clang_complete')
 
     //TODO: Should check if file exist, and reject error when appropriate
-    readFile(filePath, (err, data) =>
-      data ?
-        // If found file set userFlags
-        resolve(data.toString().split('\n'))
-        // Else set no flag
-        : resolve([])
+    readFile(
+      filePath,
+      (err, data) =>
+        data
+          ? // If found file set userFlags
+            resolve(data.toString().split('\n'))
+          : // Else set no flag
+            resolve([])
     )
   })
 
-connection.onInitialize(params =>
-  new Promise(resolve =>
-    getFlagsFromClangCompleteFile()
-      .then(userFlags => {
-
+connection.onInitialize(
+  params =>
+    new Promise(resolve =>
+      getFlagsFromClangCompleteFile().then(userFlags => {
         // Initialize config
         config.userFlags = userFlags
         config.workspaceRoot = params.rootPath
@@ -70,7 +69,8 @@ connection.onInitialize(params =>
           }
         })
       })
-  ))
+    )
+)
 
 connection.onDidChangeWatchedFiles(notification => {
   // Remove file:// protocol at beginning of uri
@@ -79,10 +79,9 @@ connection.onDidChangeWatchedFiles(notification => {
 
   // If file is .clang_complete at workspace root
   if (fileRelativePath === '.clang_complete')
-    getFlagsFromClangCompleteFile()
-      .then(userFlags =>
-        config.userFlags = userFlags
-      )
+    getFlagsFromClangCompleteFile().then(
+      userFlags => (config.userFlags = userFlags)
+    )
 })
 
 connection.onCompletion(textDocumentPosition => {
