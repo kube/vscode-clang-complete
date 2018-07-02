@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2015",
     "module": "commonjs",
     "moduleResolution": "node",
+    "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "sourceMap": true,
