@@ -1,9 +1,8 @@
 .vscode/**
 typings/**
-out/test/**
-test/**
 src/**
 **/*.map
 .gitignore
+.prettierrc
 tsconfig.json
-vsc-extension-quickstart.md
+yarn.lock

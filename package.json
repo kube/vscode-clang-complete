@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/kube/vscode-clang-complete",
   "engines": {
+    "node": "*",
     "vscode": "^1.24.0"
   },
   "categories": [
@@ -40,16 +41,29 @@
     }
   },
   "scripts": {
+    "test": "jest",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./"
   },
   "devDependencies": {
+    "@types/jest": "^23.1.4",
     "@types/node": "^10.5.1",
-    "typescript": "^2.9.2",
-    "vscode": "^1.1.18"
+    "jest": "^23.2.0",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
   },
   "dependencies": {
-    "vscode-languageclient": "^4.2.1"
+    "vscode-languageclient": "^4.2.1",
+    "vscode-languageserver": "^4.2.1",
+    "vscode": "^1.1.18",
+    "when-switch": "^0.3.1"
+  },
+  "jest": {
+    "transform": {
+      ".ts": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "\\.spec\\.ts$",
+    "moduleFileExtensions": ["ts","js"]
   }
 }
