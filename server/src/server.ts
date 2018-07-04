@@ -8,15 +8,16 @@
      ## ## ## :##
       ## ## ##*/
 
-import { readFile } from 'fs'
 import { join, relative } from 'path'
+import { readFile } from './utils'
 import { getCompletion } from './completion'
 import { config } from './config'
 import {
   IPCMessageReader,
   IPCMessageWriter,
   createConnection,
-  TextDocuments
+  TextDocuments,
+  ServerCapabilities
 } from 'vscode-languageserver'
 
 const connection = createConnection(
@@ -24,51 +25,48 @@ const connection = createConnection(
   new IPCMessageWriter(process)
 )
 
-const documents = new TextDocuments()
-documents.listen(connection)
+const textDocuments = new TextDocuments()
+textDocuments.listen(connection)
 
-const getFlagsFromClangCompleteFile = () =>
-  new Promise<string[]>(resolve => {
-    // Check presence of a .clang_complete file
-    const filePath = join(config.workspaceRoot || '', './.clang_complete')
+async function getFlagsFromClangCompleteFile() {
+  // Check presence of a .clang_complete file
+  const filePath = join(config.workspaceRoot || '', './.clang_complete')
 
-    //TODO: Should check if file exist, and reject error when appropriate
-    readFile(
-      filePath,
-      (err, data) =>
-        data
-          ? // If found file set userFlags
-            resolve(data.toString().split('\n'))
-          : // Else set no flag
-            resolve([])
-    )
-  })
+  //TODO: Should check if file exist, and reject error when appropriate
+  try {
+    return (await readFile(filePath)).toString().split('\n')
+  } catch {
+    return []
+  }
+}
 
-connection.onInitialize(
-  params =>
-    new Promise(resolve =>
-      getFlagsFromClangCompleteFile().then(userFlags => {
-        // Initialize config
-        config.userFlags = userFlags
-        config.workspaceRoot = params.rootUri
+connection.onInitialize(async params => {
+  setTimeout(() => connection.sendNotification('Hello'), 4000)
 
-        resolve({
-          capabilities: {
-            // TextDocument Full-Sync mode
-            textDocumentSync: documents.syncKind,
+  const userFlags = await getFlagsFromClangCompleteFile()
 
-            // Accept completion, and set triggerCharacters
-            completionProvider: {
-              resolveProvider: true,
-              triggerCharacters: ['.', '>', ':']
-            }
-          }
-        })
-      })
-    )
-)
+  // Initialize config
+  config.userFlags = userFlags
+  config.workspaceRoot = params.rootUri
+    ? // Remove file:// protocol on rootUri
+    params.rootUri.substring(5)
+    : ''
 
-connection.onDidChangeWatchedFiles(notification => {
+  const capabilities: ServerCapabilities = {
+    // TextDocument Full-Sync mode
+    textDocumentSync: textDocuments.syncKind,
+
+    // Accept completion, and set triggerCharacters
+    completionProvider: {
+      resolveProvider: true,
+      triggerCharacters: ['.', '>', ':']
+    }
+  }
+
+  return { capabilities }
+})
+
+connection.onDidChangeWatchedFiles(async notification => {
   // Remove file:// protocol at beginning of uri
   const fileAbsolutePath = notification.changes[0].uri.substring(5)
   const fileRelativePath = relative(
@@ -77,17 +75,24 @@ connection.onDidChangeWatchedFiles(notification => {
   )
 
   // If file is .clang_complete at workspace root
-  if (fileRelativePath === '.clang_complete')
-    getFlagsFromClangCompleteFile().then(
-      userFlags => (config.userFlags = userFlags)
-    )
+  if (fileRelativePath === '.clang_complete') {
+    config.userFlags = await getFlagsFromClangCompleteFile()
+  }
 })
 
-connection.onCompletion(textDocumentPosition => {
-  const textDocument = documents.get(textDocumentPosition.textDocument.uri)
+connection.onCompletion(async textDocumentPosition => {
+  const textDocument = textDocuments.get(textDocumentPosition.textDocument.uri)
   const position = textDocumentPosition.position
 
-  return textDocument ? getCompletion(textDocument, position) : []
+  if (textDocument) {
+    return getCompletion(
+      textDocument.languageId,
+      textDocument.getText(),
+      position
+    )
+  } else {
+    return []
+  }
 })
 
 connection.onCompletionResolve(item => item)

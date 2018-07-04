@@ -11,11 +11,7 @@
 import when from 'when-switch'
 import { exec } from 'child_process'
 import { config } from './config'
-import {
-  TextDocument,
-  Position,
-  CompletionItemKind
-} from 'vscode-languageserver'
+import { Position, CompletionItemKind } from 'vscode-languageserver'
 
 export type CompletionItem = {
   label: string
@@ -26,7 +22,7 @@ export type CompletionItem = {
 /**
  * Format Clang detail output to be readable
  */
-const formatDetail = (detail: string) =>
+export const formatDetail = (detail: string) =>
   detail
     .replace('#]', ' ')
     .replace(/([<\[]#)|(#>)/g, '')
@@ -36,7 +32,7 @@ const formatDetail = (detail: string) =>
  * Get CompletionItemKind from formatted detail
  * TODO: RegExes need rework and flow needs optimization
  */
-const itemKind = (detail: string) =>
+export const itemKind = (detail: string) =>
   when(detail)
     // is a Macro Function
     .match(/^[^a-z ]+\(.*\)/, CompletionItemKind.Function)
@@ -61,7 +57,7 @@ const itemKind = (detail: string) =>
  *
  * TODO: Use stream as input
  */
-const completionList = (output: string): CompletionItem[] =>
+export const completionList = (output: string): CompletionItem[] =>
   output
     .split('\n')
 
@@ -96,7 +92,7 @@ const completionList = (output: string): CompletionItem[] =>
 /**
  * Build Clang shell command
  */
-const buildCommand = (
+export const buildCommand = (
   userFlags: string[],
   position: Position,
   languageId: string
@@ -115,54 +111,54 @@ const buildCommand = (
 /**
  * Helper when checking completion start column
  */
-const isDelimiter = (char: string) =>
+export const isDelimiter = (char: string) =>
   '~`!@#$%^&*()-+={}[]|\\\'";:/?<>,. \t\n'.includes(char)
 
 /**
  * Get Clang completion correctly formatted for VSCode
  */
-export const getCompletion = (
-  document: TextDocument,
+export async function getCompletion(
+  languageId: string,
+  documentContent: string,
   position: Position
-): Promise<CompletionItem[]> =>
-  new Promise(resolve => {
-    const text = document.getText()
+): Promise<CompletionItem[]> {
+  // Prevent completion when typing first `:`
+  // TODO: Optimize (Use of split will be slow on big files)
+  const lineContent = documentContent.split('\n')[position.line]
+  let column = position.character
 
-    // Prevent completion when typing first `:`
-    // TODO: Optimize (Use of split will be slow on big files)
-    const lineContent = text.split('\n')[position.line]
-    let column = position.character
+  // Check for scope operator (::)
+  // If scope operator not entirely typed return no completion
+  if (
+    lineContent.charAt(column - 1) === ':' &&
+    lineContent.charAt(column - 2) !== ':'
+  ) {
+    return []
+  }
 
-    // Check for scope operator (::)
-    // If scope operator not entirely typed return no completion
-    if (
-      lineContent.charAt(column - 1) === ':' &&
-      lineContent.charAt(column - 2) !== ':'
-    ) {
-      return Promise.resolve(null)
-    }
+  // Get real completion column
+  // Clang won't give correct completion if token is already partially typed
+  while (column > 0 && !isDelimiter(lineContent.charAt(column - 1))) {
+    column--
+  }
 
-    // Get real completion column
-    // Clang won't give correct completion if token is already partially typed
-    while (column > 0 && !isDelimiter(lineContent.charAt(column - 1))) {
-      column--
-    }
+  const command = buildCommand(
+    config.userFlags,
+    {
+      line: position.line,
+      character: column
+    },
+    languageId
+  )
+  const execOptions = { cwd: config.workspaceRoot || '' }
 
-    const command = buildCommand(
-      config.userFlags,
-      {
-        line: position.line,
-        character: column
-      },
-      document.languageId
-    )
-    const execOptions = { cwd: config.workspaceRoot || '' }
-
+  return new Promise<CompletionItem[]>(resolve => {
     const child = exec(command, execOptions, (err, stdout, stderr) =>
       // Omit errors, simply read stdout for clang completions
       resolve(completionList(stdout))
     )
 
     // Pass code to clang via stdin
-    child.stdin.end(text)
+    child.stdin.end(documentContent)
   })
+}
