@@ -41,8 +41,6 @@ async function getFlagsFromClangCompleteFile() {
 }
 
 connection.onInitialize(async params => {
-  setTimeout(() => connection.sendNotification('Hello'), 4000)
-
   const userFlags = await getFlagsFromClangCompleteFile()
 
   // Initialize config
