@@ -11,10 +11,21 @@
     "when-switch": "^0.3.1"
   },
   "devDependencies": {
+    "@types/jest": "^23.1.4",
     "@types/node": "^10.5.1",
+    "jest": "^23.2.0",
+    "ts-jest": "^23.0.0",
     "typescript": "^2.9.2"
   },
   "scripts": {
+    "test": "jest",
     "compile": "installServerIntoExtension ../client ./package.json ./tsconfig.json && tsc -p ."
+  },
+  "jest": {
+    "transform": {
+      ".ts": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "\\.spec\\.ts$",
+    "moduleFileExtensions": ["ts","js"]
   }
 }
