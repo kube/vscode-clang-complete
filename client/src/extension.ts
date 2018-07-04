@@ -8,9 +8,6 @@
      ## ## ## :##
       ## ## ##*/
 
-'use strict'
-
-import { join } from 'path'
 import { workspace, ExtensionContext } from 'vscode'
 import {
   LanguageClient,
@@ -20,7 +17,7 @@ import {
 } from 'vscode-languageclient'
 
 export function activate(context: ExtensionContext) {
-  const serverModule = context.asAbsolutePath(join('server', 'server.js'))
+  const serverModule = context.asAbsolutePath('./server/server.js')
   const debugOptions = { execArgv: ['--nolazy', '--debug=6004'] }
 
   const serverOptions: ServerOptions = {
@@ -47,11 +44,11 @@ export function activate(context: ExtensionContext) {
     }
   }
 
-  const disposable = new LanguageClient(
+  const languageClient = new LanguageClient(
     'ClangComplete',
     serverOptions,
     clientOptions
-  ).start()
+  )
 
-  context.subscriptions.push(disposable)
+  context.subscriptions.push(languageClient.start())
 }
