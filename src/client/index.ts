@@ -17,7 +17,7 @@ import {
 } from 'vscode-languageclient'
 
 export function activate(context: ExtensionContext) {
-  const serverModule = context.asAbsolutePath('./server/server.js')
+  const serverModule = context.asAbsolutePath('build/server.js')
   const debugOptions = { execArgv: ['--nolazy', '--debug=6004'] }
 
   const serverOptions: ServerOptions = {
