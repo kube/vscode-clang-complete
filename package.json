@@ -16,7 +16,6 @@
   },
   "homepage": "https://github.com/kube/vscode-clang-complete",
   "engines": {
-    "node": "*",
     "vscode": "^1.24.0"
   },
   "categories": [
