@@ -18,7 +18,7 @@ import {
 
 export function activate(context: ExtensionContext) {
   const serverModule = context.asAbsolutePath('build/server.js')
-  const debugOptions = { execArgv: ['--nolazy', '--debug=6004'] }
+  const debugOptions = { execArgv: ['--nolazy', '--inspect=6004'] }
 
   const serverOptions: ServerOptions = {
     run: {
