@@ -35,10 +35,6 @@ Start the development script:
 yarn dev
 ```
 
-### Debug Client
+### Debug
 
-From the root folder, simply use the `Launch Client` configuration in the Debug Panel.
-
-### Debug Server
-
-Open the `src/` folder in a new VSCode window, and start a debug session using the `Attach` configuration from the Debug Panel.
+Start the `Client + Server` debug configuration from the Debug Panel.
