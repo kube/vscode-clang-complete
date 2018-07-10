@@ -4,7 +4,7 @@
   "description": "C/C++ completion using Clang",
   "author": "Christophe Feijoo",
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "kube",
   "icon": "icon.png",
   "repository": {
