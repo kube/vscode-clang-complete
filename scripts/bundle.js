@@ -6,13 +6,13 @@ const { mkdirp, writeFile, readFile, copy } = require('fs-extra')
 const {
   pick,
   intersection,
+  pipe,
   removeMarkdownImages,
   removeMarkdownSection
 } = require('./lib')
 
 const PROJECT_ROOT = join(__dirname, '..')
 const BUNDLE_FOLDER = join(PROJECT_ROOT, 'bundle')
-const VSCE_BIN = join(PROJECT_ROOT, 'node_modules/.bin/vsce')
 const BUNDLED_FILES = ['build', 'README.md', 'icon.png', '.vscodeignore']
 
 const PACKAGEJSON_PRESERVED_KEYS = [
@@ -51,11 +51,11 @@ const cleanPackageJson = {
 }
 
 const cleanReadme = async readmePath =>
-  writeFile(
-    readmePath,
-    removeMarkdownImages(
-      removeMarkdownSection('Install', await readFile(readmePath, 'utf8'))
-    )
+  pipe(readmePath)(
+    _ => readFile(_, 'utf8'),
+    removeMarkdownImages,
+    removeMarkdownSection('Install'),
+    _ => writeFile(readmePath, _)
   )
 
 const main = async () => {
@@ -74,7 +74,6 @@ const main = async () => {
 
   await cleanReadme(join(BUNDLE_FOLDER, 'README.md'))
   execSync('yarn', { cwd: BUNDLE_FOLDER })
-  execSync([VSCE_BIN, 'package'].join(' '), { cwd: BUNDLE_FOLDER })
 }
 
 main()

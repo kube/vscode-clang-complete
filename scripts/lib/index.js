@@ -1,4 +1,16 @@
 /**
+ * Pipe an object through a pipeline of functions
+ */
+exports.pipe = (obj) => async (...fns) => {
+  let result = obj
+
+  for (let fn of fns) {
+    result = await fn(result)
+  }
+  return result
+}
+
+/**
  * Common items of two arrays
  * @param {number[]} a
  * @param {number[]} b
@@ -30,7 +42,7 @@ exports.removeMarkdownImages = source => {
  * @param {string} source
  * @param {string} title
  */
-exports.removeMarkdownSection = (title, source) => {
+exports.removeMarkdownSection = (title) => (source) => {
   const SECTION_REGEX = /^(#+)\s*(.*)$/
 
   return source.split('\n').reduce(
