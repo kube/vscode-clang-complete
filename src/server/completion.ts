@@ -9,6 +9,7 @@
       ## ## ##*/
 
 import when from 'when-switch'
+import { pipe } from 'ramda'
 import { exec } from 'child_process'
 import { config } from './config'
 import { Position, CompletionItemKind } from 'vscode-languageserver'
@@ -52,42 +53,41 @@ export const itemKind = (detail: string) =>
 /**
  * Get Clang completion output and format it for VSCode
  *
- * TODO: This function would be more optimized with function composition
- * or pipeline on item instead of array
- *
  * TODO: Use stream as input
  */
 export const completionList = (output: string): CompletionItem[] =>
   output
     .split('\n')
-
     // Keep only completion lines
     .filter(line => /^COMPLETION/.test(line))
+    .map(
+      pipe(
+        // Remove `COMPLETION:` at beginning of line
+        _ => _.substring(11),
 
-    // Remove `COMPLETION:` at beginning of line
-    .map(line => line.substring(11))
+        // Split label and detail
+        _ => _.split(/:(.+)?/),
 
-    // Split label and detail
-    .map(line => line.split(/:(.+)?/))
+        // Array to formatted object
+        ([label, detail]) => ({
+          label: label ? label.trim() : '',
+          detail: detail ? detail.trim() : ''
+        }),
 
-    // Array to formatted object
-    .map(([label, detail]) => ({
-      label: label ? label.trim() : '',
-      detail: detail ? detail.trim() : ''
-    }))
+        // Format detail with readable type
+        ({ label, detail }) => ({
+          label,
+          detail: formatDetail(detail)
+        }),
 
-    // Format detail with readable type
-    .map(({ label, detail }) => ({
-      label,
-      detail: formatDetail(detail)
-    }))
-
-    // Set itemKind from detail
-    .map(({ label, detail }) => ({
-      label: label,
-      detail: detail,
-      kind: itemKind(detail)
-    }))
+        // Set itemKind from detail
+        ({ label, detail }) => ({
+          label: label,
+          detail: detail,
+          kind: itemKind(detail)
+        })
+      )
+    )
 
 /**
  * Build Clang shell command
