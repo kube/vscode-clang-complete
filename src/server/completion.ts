@@ -9,6 +9,7 @@
       ## ## ##*/
 
 import when from 'when-switch'
+import { set } from 'monolite'
 import { pipe } from 'ramda'
 import { exec } from 'child_process'
 import { config } from './config'
@@ -75,15 +76,12 @@ export const completionList = (output: string): CompletionItem[] =>
         }),
 
         // Format detail with readable type
-        ({ label, detail }) => ({
-          label,
-          detail: formatDetail(detail)
-        }),
+        $ => set($, _ => _.detail)(formatDetail),
 
         // Set itemKind from detail
         ({ label, detail }) => ({
-          label: label,
-          detail: detail,
+          label,
+          detail,
           kind: itemKind(detail)
         })
       )
@@ -153,7 +151,9 @@ export async function getCompletion(
   const execOptions = { cwd: config.workspaceRoot || '' }
 
   return new Promise<CompletionItem[]>(resolve => {
-    const child = exec(command, execOptions, (_err, stdout) =>
+    const child = exec(command, execOptions, (_err, stdout, stderr) =>
+      console.log(Date.now()) ||
+      console.log(stderr) ||
       // Omit errors, simply read stdout for clang completions
       resolve(completionList(stdout))
     )

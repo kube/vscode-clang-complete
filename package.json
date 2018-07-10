@@ -64,6 +64,7 @@
     "webpack-cli": "^3.0.8"
   },
   "dependencies": {
+    "monolite": "^0.4.6",
     "ramda": "^0.25.0",
     "vscode-languageclient": "^4.2.1",
     "vscode-languageserver": "^4.2.1",
