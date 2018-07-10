@@ -57,6 +57,7 @@ const cleanReadme = async readmePath =>
     _ => readFile(_, 'utf8'),
     removeMarkdownImages,
     removeMarkdownSection('Install'),
+    removeMarkdownSection('Development'),
     _ => writeFile(readmePath, _)
   )
 
