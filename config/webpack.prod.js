@@ -15,6 +15,7 @@ const baseConfig = require('./webpack.config')
  */
 const config = {
   ...baseConfig,
+  watch: false,
   mode: 'production',
   devtool: undefined
 }

@@ -18,6 +18,7 @@ const BUILD_FOLDER = join(PROJECT_ROOT, 'build')
  * @type {import("webpack").Configuration}
  */
 const config = {
+  watch: true,
   mode: 'development',
   target: 'node',
   devtool: 'inline-source-map',
