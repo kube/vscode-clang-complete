@@ -26,3 +26,19 @@ Optional flags for Clang can be defined in a `.clang_complete` file at the *root
  -include ../config.h
  -I../include
 ```
+
+## Development
+
+Start the development script:
+
+```
+yarn dev
+```
+
+### Debug Client
+
+From the root folder, simply use the `Launch Client` configuration in the Debug Panel.
+
+### Debug Server
+
+Open the `src/` folder in a new VSCode window, and start a debug session using the `Attach` configuration from the Debug Panel.

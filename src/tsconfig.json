@@ -2,14 +2,9 @@
   "compilerOptions": {
     "target": "es2015",
     "module": "commonjs",
-    "moduleResolution": "node",
     "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "sourceMap": true,
-    "outDir": "../client/server"
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "sourceMap": true
+  }
 }

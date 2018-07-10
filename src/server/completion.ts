@@ -153,7 +153,7 @@ export async function getCompletion(
   const execOptions = { cwd: config.workspaceRoot || '' }
 
   return new Promise<CompletionItem[]>(resolve => {
-    const child = exec(command, execOptions, (err, stdout, stderr) =>
+    const child = exec(command, execOptions, (_err, stdout) =>
       // Omit errors, simply read stdout for clang completions
       resolve(completionList(stdout))
     )

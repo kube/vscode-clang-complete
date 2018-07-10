@@ -4,7 +4,7 @@
   "description": "C/C++ completion using Clang",
   "author": "Christophe Feijoo",
   "license": "MIT",
-  "version": "0.0.6",
+  "version": "0.1.2",
   "publisher": "kube",
   "icon": "icon.png",
   "repository": {
@@ -25,7 +25,7 @@
     "onLanguage:c",
     "onLanguage:cpp"
   ],
-  "main": "./out/src/extension",
+  "main": "./build/client.js",
   "contributes": {
     "configuration": {
       "type": "object",
@@ -40,16 +40,41 @@
     }
   },
   "scripts": {
+    "test": "jest",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./"
+    "dev": "webpack --config config/webpack.config.js",
+    "build": "webpack --config config/webpack.prod.js",
+    "bundle": "./scripts/bundle.js",
+    "deploy": "vsce publish --packagePath bundle/*.vsix"
   },
   "devDependencies": {
+    "@types/fs-extra": "^5.0.4",
+    "@types/jest": "^23.1.4",
     "@types/node": "^10.5.1",
+    "@types/webpack": "^4.4.5",
+    "fs-extra": "^6.0.1",
+    "jest": "^23.2.0",
+    "ts-jest": "^23.0.0",
+    "ts-loader": "^4.4.2",
     "typescript": "^2.9.2",
-    "vscode": "^1.1.18"
+    "vsce": "^1.43.0",
+    "vscode": "^1.1.18",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8"
   },
   "dependencies": {
-    "vscode-languageclient": "^4.2.1"
+    "vscode-languageclient": "^4.2.1",
+    "vscode-languageserver": "^4.2.1",
+    "when-switch": "^0.3.1"
+  },
+  "jest": {
+    "transform": {
+      ".ts": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "\\.spec\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
   }
 }
