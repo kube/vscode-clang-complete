@@ -69,11 +69,11 @@ const main = async () => {
     JSON.stringify(cleanPackageJson, null, 2)
   )
 
-  for (let fileName of BUNDLED_FILES) {
-    const currentPath = join(PROJECT_ROOT, fileName)
-    const targetPath = join(BUNDLE_FOLDER, fileName)
-    await copy(currentPath, targetPath)
-  }
+  await Promise.all(
+    BUNDLED_FILES.map(fileName =>
+      copy(join(PROJECT_ROOT, fileName), join(BUNDLE_FOLDER, fileName))
+    )
+  )
 
   await cleanReadme(join(BUNDLE_FOLDER, 'README.md'))
   execSync('yarn', { cwd: BUNDLE_FOLDER })
