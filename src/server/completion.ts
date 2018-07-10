@@ -131,7 +131,7 @@ export async function getCompletion(
   // If scope operator not entirely typed return no completion
   if (
     lineContent.charAt(column - 1) === ':' &&
-    lineContent.charAt(column - 2) !== ':'
+    (lineContent.charAt(column - 2) !== ':' || languageId !== 'c++')
   ) {
     return []
   }
