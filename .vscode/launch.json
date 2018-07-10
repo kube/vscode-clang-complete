@@ -7,8 +7,7 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": ["--extensionDevelopmentPath=${workspaceRoot}"],
-      "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/build/client.js"]
+      "sourceMaps": true
     }
   ]
 }
