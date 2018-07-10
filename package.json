@@ -42,7 +42,10 @@
   "scripts": {
     "test": "jest",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "compile": "webpack --config config/webpack.config.js"
+    "dev": "webpack --config config/webpack.config.js",
+    "build": "webpack --config config/webpack.prod.js",
+    "bundle": "./scripts/bundle.js",
+    "deploy": "vsce publish --packagePath bundle/*.vsix"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
