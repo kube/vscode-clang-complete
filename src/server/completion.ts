@@ -90,15 +90,11 @@ export const completionList = (output: string): CompletionItem[] =>
 /**
  * Build Clang shell command
  */
-export const buildCommand = (
-  userFlags: string[],
-  position: Position,
-  languageId: string
-) =>
+export const buildCommand = (position: Position, languageId: string) =>
   [
     'clang',
     '-cc1',
-    ...userFlags,
+    ...config.userFlags,
     '-fsyntax-only',
     languageId === 'c' ? '-xc' : '-xc++',
     '-code-completion-macros',
@@ -141,7 +137,6 @@ export async function getCompletion(
   }
 
   const command = buildCommand(
-    config.userFlags,
     {
       line: position.line,
       character: column
@@ -152,8 +147,6 @@ export async function getCompletion(
 
   return new Promise<CompletionItem[]>(resolve => {
     const child = exec(command, execOptions, (_err, stdout, stderr) =>
-      console.log(Date.now()) ||
-      console.log(stderr) ||
       // Omit errors, simply read stdout for clang completions
       resolve(completionList(stdout))
     )
