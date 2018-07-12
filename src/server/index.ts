@@ -11,6 +11,7 @@
 import { join, relative } from 'path'
 import { readFile } from './utils'
 import { getCompletion } from './completion'
+import { requestDiagnostics } from './diagnostics'
 import { config } from './config'
 import {
   IPCMessageReader,
@@ -47,7 +48,7 @@ connection.onInitialize(async params => {
   config.userFlags = userFlags
   config.workspaceRoot = params.rootUri
     ? // Remove file:// protocol on rootUri
-    params.rootUri.substring(5)
+      params.rootUri.substring(5)
     : ''
 
   const capabilities: ServerCapabilities = {
@@ -60,9 +61,18 @@ connection.onInitialize(async params => {
       triggerCharacters: ['.', '>', ':']
     }
   }
-
   return { capabilities }
 })
+
+textDocuments.onDidChangeContent(async ({ document }) =>
+  connection.sendDiagnostics({
+    uri: document.uri,
+    diagnostics: await requestDiagnostics(
+      document.languageId,
+      document.getText()
+    )
+  })
+)
 
 connection.onDidChangeWatchedFiles(async notification => {
   // Remove file:// protocol at beginning of uri
