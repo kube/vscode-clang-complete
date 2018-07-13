@@ -3,7 +3,13 @@
   width=200px>
 
 # VSCode ClangComplete
-### Visual Studio Code C/C++ completion using Clang
+### Visual Studio Code C/C++ completion and diagnostics using Clang
+
+> ## Important Note
+>
+> This minimal extension was done when the VSCode Language Server protocol was released, and does not require anything else than `clang` installed.
+>
+> Though, [LSP has now been standardized by Microsoft](https://microsoft.github.io/language-server-protocol/), and the **LLVM team** created their own implementation, named [`clangd`](https://clang.llvm.org/extra/clangd.html), which also has an [associated VSCode extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd).
 
 ## Install
 
